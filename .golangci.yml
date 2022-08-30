@@ -1,2 +1,79 @@
-maligned:
-  suggest-new: true
+run:
+  deadline: 1m
+  issues-exit-code: 1
+  tests: false
+  skip-dirs:
+    - vendor
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+    check-blank: false
+    maligned:
+      suggest-new: true
+
+linters:
+  disable-all: true
+
+  # https://github.com/golangci/golangci-lint#supported-linters
+  enable:
+
+    # Enabled By Default Linters
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gosimple
+#    - structcheck # deprecated replaced by unused
+#    - varcheck # deprecated replaced by unused
+    - ineffassign
+#    - deadcode #deprecated replaced by unused
+    - typecheck
+
+    # Disabled By Default Linters
+    - bodyclose
+#    - golint # deprecated replaced by revive
+    - revive
+    - rowserrcheck
+    - stylecheck
+#    - gosec
+#    - interfacer # deprecated
+    - unconvert
+#    - dupl
+    - goconst
+#    - gocyclo
+#    - gocognit
+    - asciicheck
+    - gofmt
+    - goimports
+#    - maligned # deprecated replaced by fieldalignment
+#    - fieldalignment # unknown linter
+    - depguard
+    - misspell
+#    - lll
+    - unparam
+    - dogsled
+    - nakedret
+    - prealloc
+#    - scopelint # deprecated replaced by exportloopref
+    - exportloopref
+    - gocritic
+    - gochecknoinits
+    - gochecknoglobals
+    - godox
+#    - funlen
+    - whitespace
+    - wsl
+    - goprintffuncname
+#    - gomnd
+#    - goerr113
+    - gomodguard
+    - godot
+    - testpackage
+    - nestif
+    - nolintlint

@@ -1,11 +1,11 @@
-CWD            = /go/src/github.com/max-grape/config
-GOLANG_CI_IMG  = golangci/golangci-lint:v1.42-alpine
-GOLANG_IMG     = golang:1.17.1
+WORKDIR         = /usr/src/max-grape/config
+IMAGE_GOLANG_CI = golangci/golangci-lint:v1.42-alpine
+IMAGE_GOLANG    = golang:1.17.1
 
 lint:
-	@docker run --rm -t -w $(CWD) -v $(CURDIR):$(CWD) -e GOFLAGS=-mod=vendor $(GOLANG_CI_IMG) golangci-lint run
+	@docker run --rm -t -w $(WORKDIR) -v $(CURDIR):$(WORKDIR) -e GOFLAGS=-mod=vendor $(IMAGE_GOLANG_CI) golangci-lint run
 
 unit:
-	@docker run --rm -w $(CWD) -v $(CURDIR):$(CWD) -e GOFLAGS=-mod=vendor $(GOLANG_IMG) go test -v ./...
+	@docker run --rm -w $(WORKDIR) -v $(CURDIR):$(WORKDIR) -e GOFLAGS=-mod=vendor $(IMAGE_GOLANG) go test -v ./...
 
 test: lint unit

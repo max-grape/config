@@ -39,117 +39,132 @@ func Parse(input interface{}) error {
 	for i := 0; i < inputValue.NumField(); i++ {
 		inputTypeField := inputType.Field(i)
 
-		env, ok := inputTypeField.Tag.Lookup(tag)
-		if !ok || env == "" {
-			continue
-		}
-
-		envValue, ok := os.LookupEnv(env)
-		if !ok {
-			continue
-		}
-
 		inputField := inputValue.Field(i)
 		if !inputField.CanSet() {
 			return fmt.Errorf("can not set `%s` field", inputTypeField.Name)
 		}
 
-		switch inputField.Interface().(type) {
+		env, ok := inputTypeField.Tag.Lookup(tag)
+		if !ok || env == "" {
+			continue
+		}
 
+		value, ok := os.LookupEnv(env)
+		if !ok {
+			continue
+		}
+
+		switch inputField.Interface().(type) {
 		case string:
-			inputField.SetString(envValue)
+			inputField.SetString(value)
 
 		case *string:
-			inputField.Set(reflect.ValueOf(&envValue))
+			inputField.Set(reflect.ValueOf(&value))
 
 		case int, int64:
-			v, err := strconv.ParseInt(envValue, 10, 64)
+			v, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` int: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` int: %w", inputTypeField.Name, value, err)
 			}
+
 			if inputField.OverflowInt(v) {
 				return fmt.Errorf("field `%s` is oveflown by %d", inputTypeField.Name, v)
 			}
+
 			inputField.SetInt(v)
 
 		case *int:
-			v, err := strconv.ParseInt(envValue, 10, 64)
+			v, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` int: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` int: %w", inputTypeField.Name, value, err)
 			}
+
 			if !inputField.IsZero() && inputField.Elem().OverflowInt(v) {
 				return fmt.Errorf("field `%s` is oveflown by %d", inputTypeField.Name, v)
 			}
+
 			i := int(v)
 			inputField.Set(reflect.ValueOf(&i))
 
 		case *int64:
-			v, err := strconv.ParseInt(envValue, 10, 64)
+			v, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` int: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` int: %w", inputTypeField.Name, value, err)
 			}
+
 			if !inputField.IsZero() && inputField.Elem().OverflowInt(v) {
 				return fmt.Errorf("field `%s` is oveflown by %d", inputTypeField.Name, v)
 			}
+
 			inputField.Set(reflect.ValueOf(&v))
 
 		case uint, uint64:
-			v, err := strconv.ParseUint(envValue, 10, 64)
+			v, err := strconv.ParseUint(value, 10, 64)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` uint: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` uint: %w", inputTypeField.Name, value, err)
 			}
+
 			if inputField.OverflowUint(v) {
 				return fmt.Errorf("field `%s` is oveflown by %d", inputTypeField.Name, v)
 			}
+
 			inputField.SetUint(v)
 
 		case *uint:
-			v, err := strconv.ParseUint(envValue, 10, 64)
+			v, err := strconv.ParseUint(value, 10, 64)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` uint: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` uint: %w", inputTypeField.Name, value, err)
 			}
+
 			if !inputField.IsZero() && inputField.Elem().OverflowUint(v) {
 				return fmt.Errorf("field `%s` is oveflown by %d", inputTypeField.Name, v)
 			}
+
 			i := uint(v)
 			inputField.Set(reflect.ValueOf(&i))
 
 		case *uint64:
-			v, err := strconv.ParseUint(envValue, 10, 64)
+			v, err := strconv.ParseUint(value, 10, 64)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` uint: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` uint: %w", inputTypeField.Name, value, err)
 			}
+
 			if !inputField.IsZero() && inputField.Elem().OverflowUint(v) {
 				return fmt.Errorf("field `%s` is oveflown by %d", inputTypeField.Name, v)
 			}
+
 			inputField.Set(reflect.ValueOf(&v))
 
 		case bool:
-			v, err := strconv.ParseBool(envValue)
+			v, err := strconv.ParseBool(value)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` bool: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` bool: %w", inputTypeField.Name, value, err)
 			}
+
 			inputField.SetBool(v)
 
 		case *bool:
-			v, err := strconv.ParseBool(envValue)
+			v, err := strconv.ParseBool(value)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` bool: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` bool: %w", inputTypeField.Name, value, err)
 			}
+
 			inputField.Set(reflect.ValueOf(&v))
 
 		case time.Duration:
-			v, err := time.ParseDuration(envValue)
+			v, err := time.ParseDuration(value)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` duration: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` duration: %w", inputTypeField.Name, value, err)
 			}
+
 			inputField.Set(reflect.ValueOf(v))
 
 		case *time.Duration:
-			v, err := time.ParseDuration(envValue)
+			v, err := time.ParseDuration(value)
 			if err != nil {
-				return fmt.Errorf("field `%s` failed to parse `%s` duration: %w", inputTypeField.Name, envValue, err)
+				return fmt.Errorf("field `%s` failed to parse `%s` duration: %w", inputTypeField.Name, value, err)
 			}
+
 			inputField.Set(reflect.ValueOf(&v))
 		}
 	}
