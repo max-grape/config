@@ -1,0 +1,37 @@
+on: push
+
+env:
+  registry: ghcr.io
+
+jobs:
+  code-analysis:
+    name: code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: golang installation
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - name: repo checkout
+        uses: actions/checkout@v3
+
+      - name: code analysis
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.49
+
+  unit-tests:
+    name: unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: golang installation
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - name: repo checkout
+        uses: actions/checkout@v3
+
+      - name: unit tests
+        run: go test -v -race ./...

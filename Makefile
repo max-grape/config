@@ -1,6 +1,6 @@
 WORKDIR         = /usr/src/max-grape/config
-IMAGE_GOLANG_CI = golangci/golangci-lint:v1.42-alpine
-IMAGE_GOLANG    = golang:1.17.1
+IMAGE_GOLANG_CI = golangci/golangci-lint:v1.49-alpine
+IMAGE_GOLANG    = golang:1.19.1
 
 lint:
 	@docker run --rm -t -w $(WORKDIR) -v $(CURDIR):$(WORKDIR) -e GOFLAGS=-mod=vendor $(IMAGE_GOLANG_CI) golangci-lint run

@@ -6,6 +6,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -58,8 +59,21 @@ func Parse(input interface{}) error {
 		case string:
 			inputField.SetString(value)
 
+		case []string:
+			inputField.Set(reflect.ValueOf(strings.Split(value, ",")))
+
 		case *string:
 			inputField.Set(reflect.ValueOf(&value))
+
+		case []*string:
+			strs := strings.Split(value, ",")
+			val := make([]*string, len(strs))
+
+			for i := range strs {
+				val[i] = &strs[i]
+			}
+
+			inputField.Set(reflect.ValueOf(val))
 
 		case int, int64:
 			v, err := strconv.ParseInt(value, 10, 64)
